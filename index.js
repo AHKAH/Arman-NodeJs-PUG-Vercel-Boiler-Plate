@@ -3,12 +3,15 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+var app = express();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
-var app = express();
-
+const mongoose = require("mongoose");
+var dbName = "bookstore";
+mongoose.connect("mongodb+srv://arman:armanpassword@cluster0.havxfn3.mongodb.net/" + dbName + "?retryWrites=true&w=majority")
+let dbconnection = mongoose.connection;
+dbconnection.once("open", () => { console.log("Connected to mongodb") });
+dbconnection.on("error", () => { console.log("Failed to execute db command") });
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -26,12 +29,12 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
